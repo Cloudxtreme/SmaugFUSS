@@ -330,7 +330,7 @@ CLAN_DATA *get_clan( const char *name )
    CLAN_DATA *clan;
 
    for( clan = first_clan; clan; clan = clan->next )
-      if( !str_cmp( name, clan->name ) || ( ( clan->abbrev != '\0' ) && !str_cmp( name, clan->abbrev ) ) )
+      if( !str_cmp( name, clan->name ) || ( ( clan->abbrev[0] != '\0' ) && !str_cmp( name, clan->abbrev ) ) )
          return clan;
    return NULL;
 }
@@ -340,7 +340,7 @@ COUNCIL_DATA *get_council( const char *name )
    COUNCIL_DATA *council;
 
    for( council = first_council; council; council = council->next )
-      if( !str_cmp( name, council->name ) || ( ( council->abbrev != '\0' ) && !str_cmp( name, council->abbrev ) ) )
+      if( !str_cmp( name, council->name ) || ( ( council->abbrev[0] != '\0' ) && !str_cmp( name, council->abbrev ) ) )
          return council;
    return NULL;
 }
@@ -668,7 +668,7 @@ bool fread_storage( int rnum, const char *filename )
          word = fread_word( fp );
          if( !str_cmp( word, "OBJECT" ) )  /* Objects */
          {
-            fread_obj( supermob, fp, OS_VAULT );
+            fread_obj( supermob, fp, OS_CARRY );
          }
          else if( !str_cmp( word, "END" ) )  /* Done */
             break;

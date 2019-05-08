@@ -280,31 +280,18 @@ char *format_obj_to_char( OBJ_DATA * obj, CHAR_DATA * ch, bool fShort )
    if( ( IS_AFFECTED( ch, AFF_DETECT_EVIL ) || ch->Class == CLASS_PALADIN ) && IS_OBJ_STAT( obj, ITEM_EVIL ) )
       mudstrlcat( buf, "(Red Aura) ", MAX_STRING_LENGTH );
 
-   if( ch->Class == CLASS_PALADIN
-       && ( IS_OBJ_STAT( obj, ITEM_ANTI_EVIL ) && !IS_OBJ_STAT( obj, ITEM_ANTI_NEUTRAL )
-            && !IS_OBJ_STAT( obj, ITEM_ANTI_GOOD ) ) )
-      mudstrlcat( buf, "(Flaming Red) ", MAX_STRING_LENGTH );
-   if( ch->Class == CLASS_PALADIN
-       && ( !IS_OBJ_STAT( obj, ITEM_ANTI_EVIL ) && IS_OBJ_STAT( obj, ITEM_ANTI_NEUTRAL )
-            && !IS_OBJ_STAT( obj, ITEM_ANTI_GOOD ) ) )
-      mudstrlcat( buf, "(Flaming Grey) ", MAX_STRING_LENGTH );
-   if( ch->Class == CLASS_PALADIN
-       && ( !IS_OBJ_STAT( obj, ITEM_ANTI_EVIL ) && !IS_OBJ_STAT( obj, ITEM_ANTI_NEUTRAL )
-            && IS_OBJ_STAT( obj, ITEM_ANTI_GOOD ) ) )
-      mudstrlcat( buf, "(Flaming White) ", MAX_STRING_LENGTH );
-
-   if( ch->Class == CLASS_PALADIN
-       && ( IS_OBJ_STAT( obj, ITEM_ANTI_EVIL ) && IS_OBJ_STAT( obj, ITEM_ANTI_NEUTRAL )
-            && !IS_OBJ_STAT( obj, ITEM_ANTI_GOOD ) ) )
-      mudstrlcat( buf, "(Smouldering Red-Grey) ", MAX_STRING_LENGTH );
-   if( ch->Class == CLASS_PALADIN
-       && ( IS_OBJ_STAT( obj, ITEM_ANTI_EVIL ) && !IS_OBJ_STAT( obj, ITEM_ANTI_NEUTRAL )
-            && IS_OBJ_STAT( obj, ITEM_ANTI_GOOD ) ) )
-      mudstrlcat( buf, "(Smouldering Red-White) ", MAX_STRING_LENGTH );
-   if( ch->Class == CLASS_PALADIN
-       && ( !IS_OBJ_STAT( obj, ITEM_ANTI_EVIL ) && IS_OBJ_STAT( obj, ITEM_ANTI_NEUTRAL )
-            && IS_OBJ_STAT( obj, ITEM_ANTI_GOOD ) ) )
-      mudstrlcat( buf, "(Smouldering Grey-White) ", MAX_STRING_LENGTH );
+   if ( ch->Class == CLASS_PALADIN && ( IS_OBJ_STAT(obj, ITEM_ANTI_EVIL) && !IS_OBJ_STAT(obj, ITEM_ANTI_NEUTRAL) && !IS_OBJ_STAT(obj, ITEM_ANTI_GOOD))   )
+      mudstrlcat( buf, "(Smouldering Grey-White) ", MAX_STRING_LENGTH  );
+   if ( ch->Class == CLASS_PALADIN && ( !IS_OBJ_STAT(obj, ITEM_ANTI_EVIL) && IS_OBJ_STAT(obj, ITEM_ANTI_NEUTRAL) && !IS_OBJ_STAT(obj, ITEM_ANTI_GOOD))   )
+      mudstrlcat( buf, "(Smouldering Red-White) ", MAX_STRING_LENGTH  );
+   if ( ch->Class == CLASS_PALADIN && (!IS_OBJ_STAT(obj, ITEM_ANTI_EVIL) && !IS_OBJ_STAT(obj, ITEM_ANTI_NEUTRAL) && IS_OBJ_STAT(obj, ITEM_ANTI_GOOD))   )
+      mudstrlcat( buf, "(Smouldering Red-Grey) ", MAX_STRING_LENGTH  );
+   if ( ch->Class == CLASS_PALADIN && ( IS_OBJ_STAT(obj, ITEM_ANTI_EVIL) && IS_OBJ_STAT(obj, ITEM_ANTI_NEUTRAL) && !IS_OBJ_STAT(obj, ITEM_ANTI_GOOD))   )
+      mudstrlcat( buf, "(Burning White) ", MAX_STRING_LENGTH  );
+   if ( ch->Class == CLASS_PALADIN && ( IS_OBJ_STAT(obj, ITEM_ANTI_EVIL) && !IS_OBJ_STAT(obj, ITEM_ANTI_NEUTRAL) && IS_OBJ_STAT(obj, ITEM_ANTI_GOOD))   )
+      mudstrlcat( buf, "(Burning Grey) ", MAX_STRING_LENGTH  );
+   if ( ch->Class == CLASS_PALADIN && ( !IS_OBJ_STAT(obj, ITEM_ANTI_EVIL) && IS_OBJ_STAT(obj, ITEM_ANTI_NEUTRAL) && IS_OBJ_STAT(obj, ITEM_ANTI_GOOD))   )
+      mudstrlcat( buf, "(Burning Red) ", MAX_STRING_LENGTH  );
 
    if( ( IS_AFFECTED( ch, AFF_DETECT_MAGIC ) || xIS_SET( ch->act, PLR_HOLYLIGHT ) ) && IS_OBJ_STAT( obj, ITEM_MAGIC ) )
       mudstrlcat( buf, "(Magical) ", MAX_STRING_LENGTH );
@@ -3633,23 +3620,27 @@ void do_practice( CHAR_DATA* ch, const char* argument)
              && ( skill->guild != CLASS_NONE && ( !IS_GUILDED( ch ) || ( ch->pcdata->clan->Class != skill->guild ) ) ) )
             continue;
 
-         if( mob )
+         /**
+         * mob will only display practice skills it can train a player in (up to its own level in rank)  
+         * (e.g. A level 10 NPC trainer mob will display the skills and spells a character can train
+         * up to level 10) 
+         **/
+         if( mob )  
          {
-            if( skill->skill_level[mob->Class] > mob->level && skill->race_level[mob->race] > mob->level )
+            if( skill->skill_level[ch->Class] > mob->level && skill->race_level[ch->race] > mob->level )
                continue;
          }
-         else
-         {
-            is_ok = FALSE;
+        
+         is_ok = FALSE;
 
-            if( ch->level >= skill->skill_level[ch->Class] )
-               is_ok = TRUE;
-            if( ch->level >= skill->race_level[ch->race] )
-               is_ok = TRUE;
+         if( ch->level >= skill->skill_level[ch->Class] )
+            is_ok = TRUE;
+         if( ch->level >= skill->race_level[ch->race] )
+            is_ok = TRUE;
 
-            if( !is_ok )
-               continue;
-         }
+         if( !is_ok )
+            continue;
+          
 
          if( ch->pcdata->learned[sn] <= 0 && SPELL_FLAG( skill, SF_SECRETSKILL ) )
             continue;

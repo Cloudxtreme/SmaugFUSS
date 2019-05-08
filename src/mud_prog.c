@@ -2013,9 +2013,9 @@ void mprog_driver( const char *com_list, CHAR_DATA * mob, CHAR_DATA * actor, OBJ
     * imms, but decided to just take it out.  If the mob can see you, 
     * you may be chosen as the random player. -Narn
     *
-    * BUGFIX - Reported by Aurin on the SmaugMuds.org forum.
+    * BUGFIX - Reported by Aurin on the SmaugMuds forum.
     *  Adapted for simplicity by Samson. The random pick wasn't as random as one might like.
-    *  It had a heavy bias toward the first chosen target, but her fix relied
+    *  It had a heavy bias toward the first chosen target, but his fix relied
     *  on what looked like dodgy dynamic array allocation. This is safer as it doesn't
     *  need to do anything like that.
     */
@@ -2025,21 +2025,22 @@ void mprog_driver( const char *com_list, CHAR_DATA * mob, CHAR_DATA * actor, OBJ
       if( !IS_NPC( vch ) && can_see( mob, vch ) )
          ++count;
    }
-   rand_pick = number_range( 1, count );
 
    // Now that we have the count and have picked a random number in that range, run the list again if there's a point in doing so.
    if( count > 0 )
    {
+	  rand_pick = number_range( 1, count );
+      count = 0;
       for( vch = mob->in_room->first_person; vch; vch = vch->next_in_room )
       {
          if( !IS_NPC( vch ) && can_see( mob, vch ) )
          {
+			++count;
             if( count == rand_pick )
             {
                rndm = vch;
                break;
             }
-            ++count;
          }
       }
    }
